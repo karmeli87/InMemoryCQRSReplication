@@ -38,7 +38,7 @@ namespace Akka.CQRS.TradePlacers.Service
                     .WithFallback(OpsConfig.GetOpsConfig())
                     .WithFallback(ClusterSharding.DefaultConfig())
                     .WithFallback(DistributedPubSub.DefaultConfig());
-                    options.AddHocon(conf.BootstrapFromDocker(), HoconAddMode.Prepend)
+                    options.AddHocon(conf/*.BootstrapFromDocker()*/, HoconAddMode.Prepend)
                     .WithActors((system, registry) =>
                     {
                         Cluster.Cluster.Get(system).RegisterOnMemberUp(() =>
@@ -53,13 +53,13 @@ namespace Akka.CQRS.TradePlacers.Service
                                 var range = new PriceRange(min, 0.0m, max);
 
                                 // start bidders
-                                foreach (var i in Enumerable.Repeat(1, ThreadLocalRandom.Current.Next(1, 2)))
+                                foreach (var i in Enumerable.Repeat(1, ThreadLocalRandom.Current.Next(2, 6)))
                                 {
                                     system.ActorOf(Props.Create(() => new BidderActor(stock, range, shardRegionProxy)));
                                 }
 
                                 // start askers
-                                foreach (var i in Enumerable.Repeat(1, ThreadLocalRandom.Current.Next(1, 2)))
+                                foreach (var i in Enumerable.Repeat(1, ThreadLocalRandom.Current.Next(2, 6)))
                                 {
                                     system.ActorOf(Props.Create(() => new AskerActor(stock, range, shardRegionProxy)));
                                 }

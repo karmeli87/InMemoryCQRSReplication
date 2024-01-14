@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Akka.CQRS.Pricing.Events;
+using Akka.Persistence.Query;
 
 namespace Akka.CQRS.Pricing
 {
@@ -10,7 +11,7 @@ namespace Akka.CQRS.Pricing
     /// </summary>
     public sealed class MatchAggregatorSnapshot
     {
-        public MatchAggregatorSnapshot(long queryOffset, decimal avgPrice, double avgVolume, 
+        public MatchAggregatorSnapshot(Offset queryOffset, decimal avgPrice, double avgVolume, 
             IReadOnlyList<IPriceUpdate> recentPriceUpdates, IReadOnlyList<IVolumeUpdate> recentVolumeUpdates)
         {
             QueryOffset = queryOffset;
@@ -23,7 +24,7 @@ namespace Akka.CQRS.Pricing
         /// <summary>
         /// The sequence number of the Akka.Persistence.Query object to begin reading from.
         /// </summary>
-        public long QueryOffset { get; }
+        public Offset QueryOffset { get; }
 
         /// <summary>
         /// The most recently saved average price.

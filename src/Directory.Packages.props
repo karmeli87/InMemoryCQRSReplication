@@ -4,18 +4,18 @@
   </PropertyGroup>
   <!-- App dependencies -->
   <ItemGroup>
-    <PackageVersion Include="Akka" Version="$(AkkaVersion)" />
+    <PackageVersion Include="Akka" Version="1.5.15" />
     <PackageVersion Include="Akka.Cluster.Sharding" Version="$(AkkaVersion)" />
     <PackageVersion Include="Akka.Cluster.Tools" Version="$(AkkaVersion)" />
     <PackageVersion Include="Akka.Persistence.Extras" Version="$(AkkaPersistenceExtrasVersion)" />
-    <PackageVersion Include="Akka.Persistence.Query" Version="$(AkkaVersion)" />
+    <PackageVersion Include="Akka.Persistence.Query" Version="1.5.15" />
     <PackageVersion Include="Petabridge.Cmd.Host" Version="$(PbmVersion)" />
     <PackageVersion Include="Petabridge.Collections" Version="1.0.0" />
     <PackageVersion Include="Akka.Bootstrap.Docker" Version="$(AkkaDockerBootstrapVersion)" />
     <PackageVersion Include="Akka.HealthCheck.Persistence" Version="$(AkkaHealthCheckVersion)" />
     <PackageVersion Include="Akka.Persistence.Sql" Version="$(AkkaSqlVersion)" />
-    <PackageVersion Include="Akka.Persistence" Version="$(AkkaVersion)" />
-    <PackageVersion Include="Microsoft.Data.SqlClient" Version="$(SqlClientVersion)"/>
+    <PackageVersion Include="Akka.Persistence" Version="1.5.15" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="$(SqlClientVersion)" />
     <PackageVersion Include="Petabridge.Cmd.Cluster" Version="$(PbmVersion)" />
     <PackageVersion Include="Petabridge.Cmd.Cluster.Sharding" Version="$(PbmVersion)" />
     <PackageVersion Include="Petabridge.Cmd.Remote" Version="$(PbmVersion)" />

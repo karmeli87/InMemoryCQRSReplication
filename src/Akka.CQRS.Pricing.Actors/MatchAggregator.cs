@@ -39,7 +39,7 @@ namespace Akka.CQRS.Pricing.Actors
         public readonly string TickerSymbol;
         public override string PersistenceId { get; }
 
-        public long QueryOffset { get; private set; }
+        public Offset QueryOffset { get; private set; }
 
         private class PublishEvents
         {
@@ -91,7 +91,7 @@ namespace Akka.CQRS.Pricing.Actors
             var self = Self;
 
             // transmit all tag events to myself
-            _eventsByTag.EventsByTag(TickerSymbol, Offset.Sequence(QueryOffset))
+            _eventsByTag.EventsByTag(TickerSymbol, QueryOffset)
                 .Where(x => x.Event is Match) // only care about Match events
                 .RunWith(Sink.ActorRef<EventEnvelope>(self, UnexpectedEndOfStream.Instance), mat);
 
@@ -121,9 +121,9 @@ namespace Akka.CQRS.Pricing.Actors
                 if (e.Event is Match m)
                 {
                     // update the offset
-                    if (e.Offset is Sequence s)
+                    if (e.Offset is Offset s)
                     {
-                        QueryOffset = s.Value;
+                        QueryOffset = s;
                     }
 
                     if (_matchAggregate == null)

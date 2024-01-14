@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Bootstrap.Docker;
-using Akka.Cluster.Hosting;
 using Akka.Cluster.Sharding;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Cluster.Tools.Singleton;
@@ -14,18 +12,16 @@ using Akka.CQRS.Infrastructure.Ops;
 using Akka.CQRS.Pricing.Actors;
 using Akka.CQRS.Pricing.Cli;
 using Akka.Hosting;
-using Akka.Persistence.Hosting;
 using Akka.Persistence.Query;
-using Akka.Persistence.Sql;
-using Akka.Persistence.Sql.Query;
-using Akka.Util;
+using Akka.Persistence.RavenDB;
+using Akka.Persistence.RavenDB.Query;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Petabridge.Cmd.Cluster;
 using Petabridge.Cmd.Cluster.Sharding;
 using Petabridge.Cmd.Host;
 using Petabridge.Cmd.Remote;
-using static Akka.CQRS.Infrastructure.SqlDbHoconHelper;
+using static Akka.CQRS.Infrastructure.RavenDbHoconHelper;
 
 namespace Akka.CQRS.Pricing.Service
 {
@@ -33,24 +29,24 @@ namespace Akka.CQRS.Pricing.Service
     {
         public static async Task<int> Main(string[] args)
         {
-            var sqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STR")?.Trim();
-            if (string.IsNullOrEmpty(sqlConnectionString))
+            var url = "http://localhost:8080";//Environment.GetEnvironmentVariable("RAVENDB_URL")?.Trim();
+            if (string.IsNullOrEmpty(url))
             {
-                Console.WriteLine("ERROR! SQL connection string not provided. Can't start.");
+                Console.WriteLine("ERROR! RavenDB url not provided. Can't start.");
                 return -1;
             }
-            Console.WriteLine($"Connecting to SQL server at {sqlConnectionString}");
+            Console.WriteLine($"Connecting to RavenDB server at {url}");
 
-            var sqlProviderName = Environment.GetEnvironmentVariable("SQL_PROVIDER_NAME")?.Trim();
-            if (string.IsNullOrEmpty(sqlProviderName))
+            var database = "TEST"; //Environment.GetEnvironmentVariable("RAVENDB_NAME")?.Trim();
+            if (string.IsNullOrEmpty(database))
             {
-                Console.WriteLine("ERROR! SQL provider name not provided. Can't start.");
+                Console.WriteLine("ERROR! RavenDB database name not provided. Can't start.");
                 return -1;
             }
-            Console.WriteLine($"Connecting to SQL provider {sqlProviderName}");
+            Console.WriteLine($"Connecting to RavenDB database {database}");
 
-            // Need to wait for the SQL server to spin up
-            await Task.Delay(TimeSpan.FromSeconds(15));
+            // Need to wait for the RavenDB server to spin up
+          //  await Task.Delay(TimeSpan.FromSeconds(15));
             
             var config = await File.ReadAllTextAsync("app.conf");
             using var host = new HostBuilder()
@@ -61,18 +57,18 @@ namespace Akka.CQRS.Pricing.Service
                 {
                     // Add HOCON configuration from Docker
                     var conf = ConfigurationFactory.ParseString(config)                 
-                    .WithFallback(GetSqlHocon(sqlConnectionString, sqlProviderName))                
+                    .WithFallback(GetRavenDbHocon(url, database))                
                     .WithFallback(OpsConfig.GetOpsConfig())                 
                     .WithFallback(ClusterSharding.DefaultConfig())                 
                     .WithFallback(DistributedPubSub.DefaultConfig())                 
-                    .WithFallback(SqlPersistence.DefaultConfiguration);
-                    options.AddHocon(conf.BootstrapFromDocker(), HoconAddMode.Prepend)
+                    .WithFallback(RavenDbPersistence.DefaultConfiguration());
+                    options.AddHocon(conf/*.BootstrapFromDocker()*/, HoconAddMode.Prepend)
                     .WithActors((system, registry) =>
                     {
                         var priceViewMaster = system.ActorOf(Props.Create(() => new PriceViewMaster()), "prices");
                         registry.Register<PriceViewMaster>(priceViewMaster);
                         // used to seed pricing data
-                        var readJournal = system.ReadJournalFor<SqlReadJournal>(SqlReadJournal.Identifier);
+                        var readJournal = system.ReadJournalFor<RavenDbReadJournal>(RavenDbReadJournal.Identifier);
                         Cluster.Cluster.Get(system).RegisterOnMemberUp(() =>
                         {
                             var sharding = ClusterSharding.Get(system);

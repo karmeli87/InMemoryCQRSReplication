@@ -7,16 +7,16 @@ using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Configuration;
 using Akka.CQRS.Infrastructure.Ops;
 using Akka.Hosting;
-using Akka.Persistence.Sql;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Petabridge.Cmd.Cluster;
 using Petabridge.Cmd.Cluster.Sharding;
 using Petabridge.Cmd.Host;
 using Petabridge.Cmd.Remote;
-using static Akka.CQRS.Infrastructure.SqlDbHoconHelper;
+using static Akka.CQRS.Infrastructure.RavenDbHoconHelper;
 using Akka.CQRS.TradeProcessor.Actors;
 using Akka.CQRS.Infrastructure;
+using Akka.Persistence.RavenDB;
 
 namespace Akka.CQRS.TradeProcessor.Service
 {
@@ -24,24 +24,24 @@ namespace Akka.CQRS.TradeProcessor.Service
     {
         public static async Task<int> Main(string[] args)
         {
-            var sqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STR")?.Trim();
-            if (string.IsNullOrEmpty(sqlConnectionString))
+            var url = "http://localhost:8080";//Environment.GetEnvironmentVariable("RAVENDB_URL")?.Trim();
+            if (string.IsNullOrEmpty(url))
             {
-                Console.WriteLine("ERROR! SQL connection string not provided. Can't start.");
+                Console.WriteLine("ERROR! RavenDB url not provided. Can't start.");
                 return -1;
             }
-            Console.WriteLine($"Connecting to SQL server at {sqlConnectionString}");
+            Console.WriteLine($"Connecting to RavenDB server at {url}");
 
-            var sqlProviderName = Environment.GetEnvironmentVariable("SQL_PROVIDER_NAME")?.Trim();
-            if (string.IsNullOrEmpty(sqlProviderName))
+            var database = "TEST";//Environment.GetEnvironmentVariable("RAVENDB_NAME")?.Trim();
+            if (string.IsNullOrEmpty(database))
             {
-                Console.WriteLine("ERROR! SQL provider name not provided. Can't start.");
+                Console.WriteLine("ERROR! RavenDB database name not provided. Can't start.");
                 return -1;
             }
-            Console.WriteLine($"Connecting to SQL provider {sqlProviderName}");
+            Console.WriteLine($"Connecting to RavenDB database {database}");
 
             // Need to wait for the SQL server to spin up
-            await Task.Delay(TimeSpan.FromSeconds(15));
+            // await Task.Delay(TimeSpan.FromSeconds(15));
 
             var config = await File.ReadAllTextAsync("app.conf");
 
@@ -53,12 +53,12 @@ namespace Akka.CQRS.TradeProcessor.Service
                 {
                     // Add HOCON configuration from Docker
                     var conf = ConfigurationFactory.ParseString(config)
-                        .WithFallback(GetSqlHocon(sqlConnectionString, sqlProviderName))
+                        .WithFallback(GetRavenDbHocon(url, database))
                         .WithFallback(OpsConfig.GetOpsConfig())
                         .WithFallback(ClusterSharding.DefaultConfig())
                         .WithFallback(DistributedPubSub.DefaultConfig())
-                        .WithFallback(SqlPersistence.DefaultConfiguration);
-                     options.AddHocon(conf.BootstrapFromDocker(), HoconAddMode.Prepend)
+                        .WithFallback(RavenDbPersistence.DefaultConfiguration());
+                     options.AddHocon(conf/*.BootstrapFromDocker()*/, HoconAddMode.Prepend)
                      .WithActors((system, registry) =>
                      {
                          Cluster.Cluster.Get(system).RegisterOnMemberUp(() =>
