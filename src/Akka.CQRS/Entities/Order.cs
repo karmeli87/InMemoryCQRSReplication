@@ -8,6 +8,7 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Akka.CQRS.Events;
+using Newtonsoft.Json;
 
 namespace Akka.CQRS
 {
@@ -26,14 +27,15 @@ namespace Akka.CQRS
         /// </summary>
         public const double Epsilon = 0.001d;
 
-        public Order(string tradeId, string stockId, TradeSide side, double originalQuantity, decimal price, DateTimeOffset timeIssued)
-        : this(tradeId, stockId, side, originalQuantity, price, timeIssued, ImmutableList.Create<Fill>())
+        public Order(string orderId, string stockId, TradeSide side, double originalQuantity, decimal price, DateTimeOffset timeIssued)
+        : this(orderId, stockId, side, originalQuantity, price, timeIssued, ImmutableList.Create<Fill>())
         {
         }
 
-        public Order(string tradeId, string stockId, TradeSide side, double originalQuantity, decimal price, DateTimeOffset timeIssued, IImmutableList<Fill> fills)
+        [JsonConstructor]
+        public Order(string orderId, string stockId, TradeSide side, double originalQuantity, decimal price, DateTimeOffset timeIssued, IImmutableList<Fill> fills)
         {
-            OrderId = tradeId;
+            OrderId = orderId;
             StockId = stockId;
             Side = side;
             OriginalQuantity = originalQuantity;
@@ -64,7 +66,7 @@ namespace Akka.CQRS
             // validate that the right fill event was sent to the right trade
             if (!fill.OrderId.Equals(OrderId))
             {
-                throw new ArgumentException($"Expected fill for tradeId {OrderId}, but instead received one for {fill.OrderId}");
+                throw new ArgumentException($"Expected fill for orderId {OrderId}, but instead received one for {fill.OrderId}");
             }
 
             return new Order(OrderId, StockId, Side, OriginalQuantity, Price, TimeIssued, Fills.Add(fill));
