@@ -16,7 +16,7 @@ using Petabridge.Cmd.Remote;
 using static Akka.CQRS.Infrastructure.RavenDbHoconHelper;
 using Akka.CQRS.TradeProcessor.Actors;
 using Akka.CQRS.Infrastructure;
-using Akka.Persistence.RavenDB;
+using Akka.Persistence.RavenDb;
 
 namespace Akka.CQRS.TradeProcessor.Service
 {
