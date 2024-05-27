@@ -1,16 +1,49 @@
-version: '3.7'
-
 services:
-  sql:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    hostname: sql
-    restart: always
+  ravendb1:
+    container_name: ravendb1
+    image: ravendb/ravendb
     ports:
-      - '1633:1433'
+      - 8081:8080
+      - 38889:38888
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "This!IsOpenSource1"
-
+      - RAVEN_Security_UnsecuredAccessAllowed=PublicNetwork
+      - RAVEN_Setup_Mode=None
+      - RAVEN_License_Eula_Accepted=true
+      - RAVEN_SETTINGS={}
+      - "RAVEN_PublicServerUrl=http://ravendb1:8080"
+      - "RAVEN_PublicServerUrl_Tcp=tcp://ravendb1:38888"
+    restart: always
+    
+  ravendb2:
+    container_name: ravendb2
+    image: ravendb/ravendb
+    ports:
+      - 8082:8080
+      - 38882:38888
+    environment:
+      - RAVEN_Security_UnsecuredAccessAllowed=PublicNetwork
+      - RAVEN_Setup_Mode=None
+      - RAVEN_License_Eula_Accepted=true
+      - RAVEN_SETTINGS={}
+      - "RAVEN_PublicServerUrl=http://ravendb2:8080"
+      - "RAVEN_PublicServerUrl_Tcp=tcp://ravendb2:38888"
+    restart: always
+    
+  ravendb3:
+    container_name: ravendb3
+    image: ravendb/ravendb
+    ports:
+      - 8083:8080
+      - 38883:38888
+    environment:
+      - RAVEN_Security_UnsecuredAccessAllowed=PublicNetwork
+      - RAVEN_Setup_Mode=None
+      - RAVEN_License_Eula_Accepted=true
+      - RAVEN_SETTINGS={}
+      - "RAVEN_PublicServerUrl=http://ravendb3:8080"
+      - "RAVEN_PublicServerUrl_Tcp=tcp://ravendb3:38888"
+    restart: always
+      
   lighthouse:
     image: petabridge/lighthouse:latest
     hostname: lighthouse
@@ -30,11 +63,13 @@ services:
     environment:
       CLUSTER_SEEDS: "akka.tcp://AkkaTrader@lighthouse:4053"
       CLUSTER_PORT: 5110
-      SQL_CONNECTION_STR: "Server=sql,1433;User Id=sa;Password=This!IsOpenSource1;TrustServerCertificate=true"
-      SQL_PROVIDER_NAME: "SqlServer.2019"
+      RAVENDB_URL: "http://ravendb1:8080"
+      RAVENDB_NAME: "AkkaStorage"
     restart: on-failure
     depends_on:
-      - "sql"
+      - "ravendb1"
+      - "ravendb2"
+      - "ravendb3"
       - "lighthouse"
 
   traders:
@@ -69,9 +104,11 @@ services:
     environment:
       CLUSTER_SEEDS: "akka.tcp://AkkaPricing@lighthouse_pricing:4054"
       CLUSTER_PORT: 6055
-      SQL_CONNECTION_STR: "Server=sql,1433;User Id=sa;Password=This!IsOpenSource1;TrustServerCertificate=true"
-      SQL_PROVIDER_NAME: "SqlServer.2019"
+      RAVENDB_URL: "http://ravendb1:8080"
+      RAVENDB_NAME: "AkkaStorage"
     restart: on-failure
     depends_on:
-      - "sql"
+      - "ravendb1"
+      - "ravendb2"
+      - "ravendb3"
       - "lighthouse_pricing"

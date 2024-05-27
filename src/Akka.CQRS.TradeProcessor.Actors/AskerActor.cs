@@ -92,14 +92,18 @@ namespace Akka.CQRS.TradeProcessor.Actors
                 var ask = CreateAsk();
                 _asks[ask.OrderId] = ask;
                 _tradeGateway.Tell(new ConfirmableMessage<Ask>(ask, _confirmationId++, _traderId));
-                _log.Info("ASK ${0} for {1} units of {2}", ask.AskPrice, ask.AskQuantity, _tickerSymbol);
+                if (_log.IsInfoEnabled)
+                    _log.Info("ASK ${0} for {1} units of {2}", ask.AskPrice, ask.AskQuantity, _tickerSymbol);
             });
 
             Receive<Fill>(f => _asks.ContainsKey(f.OrderId), f =>
             {
                 _fills.Add(f);
-                _log.Info("Received FILL for ASK order {0} of {1} stock @ ${2} per unit for {3} units", f.OrderId, f.StockId, f.Price, f.Quantity);
-                _log.Info("We have sold {0} units of {1} at AVG price of {2}", _fills.Sum(x => x.Quantity), _tickerSymbol, _fills.Average(x => (decimal)x.Quantity * x.Price));
+                if (_log.IsInfoEnabled)
+                {
+                    _log.Info("Received FILL for ASK order {0} of {1} stock @ ${2} per unit for {3} units", f.OrderId, f.StockId, f.Price, f.Quantity);
+                    _log.Info("We have sold {0} units of {1} at AVG price of {2}", _fills.Sum(x => x.Quantity), _tickerSymbol, _fills.Average(x => (decimal)x.Quantity * x.Price));
+                }
             });
         }
 

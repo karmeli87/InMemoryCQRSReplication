@@ -88,7 +88,8 @@ namespace Akka.CQRS.TradeProcessor.Actors
 
                 PersistAll(persistableEvents, @event =>
                 {
-                    _log.Info("[{0}][{1}] - {2} units @ {3} per unit", TickerSymbol, @event.ToTradeEventType(), a.Message.AskQuantity, a.Message.AskPrice);
+                    if (_log.IsInfoEnabled)
+                        _log.Info("[{0}][{1}] - {2} units @ {3} per unit", TickerSymbol, @event.ToTradeEventType(), a.Message.AskQuantity, a.Message.AskPrice);
                     if (@event is Ask)
                     {
                         // need to use the ID of the original sender to satisfy the PersistenceSupervisor
@@ -112,7 +113,8 @@ namespace Akka.CQRS.TradeProcessor.Actors
 
                 PersistAll(persistableEvents, @event =>
                 {
-                    _log.Info("[{0}][{1}] - {2} units @ {3} per unit", TickerSymbol, @event.ToTradeEventType(), b.Message.BidQuantity, b.Message.BidPrice);
+                    if (_log.IsInfoEnabled)
+                        _log.Info("[{0}][{1}] - {2} units @ {3} per unit", TickerSymbol, @event.ToTradeEventType(), b.Message.BidQuantity, b.Message.BidPrice);
                     if (@event is Bid)
                     {
                         //_confirmationActor.Tell(new Confirmation(b.ConfirmationId, PersistenceId));

@@ -19,6 +19,8 @@ akka.persistence.journal.ravendb {{
 akka.persistence.query.journal.ravendb {{
 }}
 akka.persistence.snapshot-store.ravendb {{
+    urls = [""{url}""]
+    name = ""{database}""
 }}";
             return hocon;
         }

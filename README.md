@@ -80,21 +80,17 @@ akka{
 	# cluster, remoting configs...
 	persistence{
 		journal {
-		    plugin = "akka.persistence.journal.mongodb"
-			mongodb.class = "Akka.Persistence.MongoDb.Journal.MongoDbJournal, Akka.Persistence.MongoDb"
-			mongodb.collection = "EventJournal"
-			mongodb.event-adapters = {
+		    plugin = "akka.persistence.journal.ravendb"
+			ravendb.event-adapters = {
 				stock-tagger = "Akka.CQRS.Infrastructure.StockEventTagger, Akka.CQRS.Infrastructure"
 			}
-			mongodb.event-adapter-bindings = {
+			ravendb.event-adapter-bindings = {
 				"Akka.CQRS.IWithStockId, Akka.CQRS" = stock-tagger
 			}
 		}
 
 		snapshot-store {
-		    plugin = "akka.persistence.snapshot-store.mongodb"
-			mongodb.class = "Akka.Persistence.MongoDb.Snapshot.MongoDbSnapshotStore, Akka.Persistence.MongoDb"
-			mongodb.collection = "SnapshotStore"
+		    plugin = "akka.persistence.snapshot-store.ravendb"
 		}
 	}
 }
@@ -362,7 +358,7 @@ We then ensure via the `OpsConfig` class that this configuration is used _unifor
 
 ```csharp
 // get HOCON configuration
-var conf = ConfigurationFactory.ParseString(config).WithFallback(GetMongoHocon(mongoConnectionString))
+var conf = ConfigurationFactory.ParseString(config).WithFallback(GetRavenDbHocon(url, database))
     .WithFallback(OpsConfig.GetOpsConfig())
     .WithFallback(ClusterSharding.DefaultConfig())
     .WithFallback(DistributedPubSub.DefaultConfig());
@@ -379,7 +375,7 @@ The Trading Services are driven primarily through the use of three actor types:
 
 1. [`BidderActor`](src/Akka.CQRS.TradeProcessor.Actors/BidderActor.cs) - runs inside the "Trade Placement" services and randomly bids on a specific stock;
 2. [`AskerActor`](rc/Akka.CQRS.TradeProcessor.Actors/AskerActor.cs) - runs inside the "Trade Placement" services and randomly asks (sells) a specific stock; and
-3. [`OrderBookActor`](src/Akka.CQRS.TradeProcessor.Actors/OrderBookActor.cs) - the most important actor in this scenario, it is hosted on the "Trace Processor" service and it's responsible for matching bids with asks, and when it does it publishes `Match` and `Fill` events across the cluster using `DistributedPubSub`. This is how the `AskerActor` and the `BidderActor` involved in making the trade are notified that their trades have been settled. All events received and produced by the `OrderBookActor` are persisted using Akka.Persistence.MongoDb.
+3. [`OrderBookActor`](src/Akka.CQRS.TradeProcessor.Actors/OrderBookActor.cs) - the most important actor in this scenario, it is hosted on the "Trace Processor" service and it's responsible for matching bids with asks, and when it does it publishes `Match` and `Fill` events across the cluster using `DistributedPubSub`. This is how the `AskerActor` and the `BidderActor` involved in making the trade are notified that their trades have been settled. All events received and produced by the `OrderBookActor` are persisted using Akka.Persistence.RavenDb.
 
 The domain design is relatively simple otherwise and we'd encourage you to look at the code directly for more details about how it all works. 
 
@@ -625,7 +621,11 @@ From there, we can start up both cluster via `docker-compose`:
 PS> docker-compose up
 ```
 
-This will create both clusters, the MongoDb database they depend on, and will also expose the Pricing node's `Petabridge.Cmd.Host` port on a randomly available port. [See the `docker-compose.yaml` file for details](docker-compose.yaml).
+This will create both clusters, the RavenDB nodes they depend on, and will also expose the Pricing node's `Petabridge.Cmd.Host` port on a randomly available port. [See the `docker-compose.yaml` file for details](docker-compose.yaml).
+
+### Build the RavenDB Cluster
+- need to register a license or get a community one
+- add nodes to the cluster
 
 ### Testing the Consistency and Failover Capabilities of Akka.CQRS
 If you want to test the consistency and fail-over capabilities of this sample, then start by [installing the `pbm` commandline tool](https://cmd.petabridge.com/articles/install/index.html):
@@ -655,7 +655,7 @@ pbm> price track -s MSFT
 Next, use `docker-compose` to bring up a few more Pricing containers in another terminal window:
 
 ```
-PS> docker-compose up scale pricing-engine=4
+PS> docker-compose up --scale pricing-engine=4
 ```
 
 This will create another 3 containers running the `akka.cqrs.pricing` image - all of them will join the cluster automatically, which you can verify using a `cluster show` command in Petabridge.Cmd.
@@ -663,6 +663,3 @@ This will create another 3 containers running the `akka.cqrs.pricing` image - al
 Once this is done, start two more terminals and _connect to two of the new `akka.cqrs.pricing` nodes you just started_ and execute the same `price track -s MSFT` command. You should see that the stream of updated prices is uniform across all three nodes.
 
 Now go and kill the original node you were connected to - the first one of the `akka.cqrs.pricing` nodes you were connected to. This node definitely has some shards hosted on it, if not all of the shards given how few entities there are, so this will prompt a fail-over to happen and for the sharded entity to move across the cluster. What you should see is that the pricing data for the other two nodes you're connected to remains consistent both before, during, and after the fail-over. It may have taken some time for the new `MatchAggregator` to come online and begin updating prices again, but once it came back online the `PriceVolumeViewActor`s that the Akka.CQRS.Pricing.Cli commands uses were able to re-acquire their pricing information from Akka.Cluster.Sharding and continue running normally.
-
-##### Known Issues
-This sample is currently affected by https://github.com/akkadotnet/akka.net/issues/3414, so you will need to explicitly delete the MongoDb container (not just stop it - DELETE it) every time you restart this Docker cluster from scratch. We're working on fixing that issue and should have a patch for it shortly.

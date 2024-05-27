@@ -38,7 +38,11 @@ namespace Akka.CQRS.TradePlacers.Service
                     .WithFallback(OpsConfig.GetOpsConfig())
                     .WithFallback(ClusterSharding.DefaultConfig())
                     .WithFallback(DistributedPubSub.DefaultConfig());
-                    options.AddHocon(conf/*.BootstrapFromDocker()*/, HoconAddMode.Prepend)
+                    options.AddHocon(conf.BootstrapFromDocker(), HoconAddMode.Prepend)
+                        .ConfigureLoggers(setup =>
+                        {
+                            setup.LogLevel = Event.LogLevel.WarningLevel;
+                        })
                     .WithActors((system, registry) =>
                     {
                         Cluster.Cluster.Get(system).RegisterOnMemberUp(() =>
@@ -76,7 +80,7 @@ namespace Akka.CQRS.TradePlacers.Service
 
                 });
             })
-            .ConfigureLogging((hostContext, configLogging) =>
+            .ConfigureLogging(configLogging =>
             {
                 configLogging.AddConsole();
             })

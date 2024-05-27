@@ -45,7 +45,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Akka.CQRS.Pricing.Cli", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Akka.CQRS.Infrastructure.Tests", "src\Akka.CQRS.Infrastructure.Tests\Akka.CQRS.Infrastructure.Tests.csproj", "{73E9BD37-D311-42FF-80E5-3E6C38835910}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Akka.Persistence.RavenDB", "..\Akka.Persistence.RavenDB\src\Akka.Persistence.RavenDB\Akka.Persistence.RavenDB.csproj", "{0E0377F0-7D90-490A-AB8A-BF96BC24EED9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Akka.Persistence.RavenDb.Hosting", "..\Akka.Persistence.RavenDB\src\Akka.Persistence.RavenDb.Hosting\Akka.Persistence.RavenDb.Hosting.csproj", "{BEEF5EA3-36BC-4AD8-AF3A-F79E878E6212}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Akka.Persistence.RavenDb", "..\Akka.Persistence.RavenDB\src\Akka.Persistence.RavenDB\Akka.Persistence.RavenDb.csproj", "{9207E87E-17C8-4C00-B830-4939D7A66333}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,10 +111,14 @@ Global
 		{73E9BD37-D311-42FF-80E5-3E6C38835910}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73E9BD37-D311-42FF-80E5-3E6C38835910}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73E9BD37-D311-42FF-80E5-3E6C38835910}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0E0377F0-7D90-490A-AB8A-BF96BC24EED9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0E0377F0-7D90-490A-AB8A-BF96BC24EED9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0E0377F0-7D90-490A-AB8A-BF96BC24EED9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E0377F0-7D90-490A-AB8A-BF96BC24EED9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEEF5EA3-36BC-4AD8-AF3A-F79E878E6212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEEF5EA3-36BC-4AD8-AF3A-F79E878E6212}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEEF5EA3-36BC-4AD8-AF3A-F79E878E6212}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEEF5EA3-36BC-4AD8-AF3A-F79E878E6212}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9207E87E-17C8-4C00-B830-4939D7A66333}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9207E87E-17C8-4C00-B830-4939D7A66333}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9207E87E-17C8-4C00-B830-4939D7A66333}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9207E87E-17C8-4C00-B830-4939D7A66333}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

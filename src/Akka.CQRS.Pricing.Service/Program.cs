@@ -29,7 +29,7 @@ namespace Akka.CQRS.Pricing.Service
     {
         public static async Task<int> Main(string[] args)
         {
-            var url = "http://localhost:8080";//Environment.GetEnvironmentVariable("RAVENDB_URL")?.Trim();
+            var url = Environment.GetEnvironmentVariable("RAVENDB_URL")?.Trim();
             if (string.IsNullOrEmpty(url))
             {
                 Console.WriteLine("ERROR! RavenDB url not provided. Can't start.");
@@ -37,7 +37,7 @@ namespace Akka.CQRS.Pricing.Service
             }
             Console.WriteLine($"Connecting to RavenDB server at {url}");
 
-            var database = "TEST"; //Environment.GetEnvironmentVariable("RAVENDB_NAME")?.Trim();
+            var database = Environment.GetEnvironmentVariable("RAVENDB_NAME")?.Trim();
             if (string.IsNullOrEmpty(database))
             {
                 Console.WriteLine("ERROR! RavenDB database name not provided. Can't start.");
@@ -62,7 +62,11 @@ namespace Akka.CQRS.Pricing.Service
                     .WithFallback(ClusterSharding.DefaultConfig())                 
                     .WithFallback(DistributedPubSub.DefaultConfig())                 
                     .WithFallback(RavenDbPersistence.DefaultConfiguration());
-                    options.AddHocon(conf/*.BootstrapFromDocker()*/, HoconAddMode.Prepend)
+                    options.AddHocon(conf.BootstrapFromDocker(), HoconAddMode.Prepend)
+                        .ConfigureLoggers(setup =>
+                        {
+                            setup.LogLevel = Event.LogLevel.WarningLevel;
+                        })
                     .WithActors((system, registry) =>
                     {
                         var priceViewMaster = system.ActorOf(Props.Create(() => new PriceViewMaster()), "prices");

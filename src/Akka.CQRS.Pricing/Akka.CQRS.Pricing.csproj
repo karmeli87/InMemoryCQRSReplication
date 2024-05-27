@@ -4,6 +4,7 @@
     <Description>Read-side pricing aggregates and views.</Description>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Akka.Persistence.Query" />
     <PackageReference Include="Petabridge.Collections" />
   </ItemGroup>
 

@@ -7,8 +7,4 @@
   <ItemGroup>
     <PackageReference Include="Akka" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Akka.Persistence.RavenDB\src\Akka.Persistence.RavenDB\Akka.Persistence.RavenDB.csproj" />
-  </ItemGroup>
 </Project>

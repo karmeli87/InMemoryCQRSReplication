@@ -56,12 +56,15 @@ namespace Akka.CQRS.Pricing.Actors
                 if (s.PriceUpdates.Length == 0) // empty set - no price data yet
                 {
                     _history = new PriceHistory(_tickerSymbol, ImmutableSortedSet<IPriceUpdate>.Empty);
-                    _log.Info("Received empty price history for [{0}]", _history.StockId);
+                    if (_log.IsInfoEnabled)
+                        _log.Info("Received empty price history for [{0}]", _history.StockId);
                 }
                 else
                 {
                     _history = new PriceHistory(_tickerSymbol, s.PriceUpdates.ToImmutableSortedSet());
-                    _log.Info("Received recent price history for [{0}] - current price is [{1}] as of [{2}]", _history.StockId, _history.CurrentPrice, _history.Until);
+                    if (_log.IsInfoEnabled)
+                        _log.Info("Received recent price history for [{0}] - current price is [{1}] as of [{2}]", _history.StockId, _history.CurrentPrice,
+                            _history.Until);
                 }
                 
                 _tickerEntity = Sender;
@@ -70,7 +73,8 @@ namespace Akka.CQRS.Pricing.Actors
 
             Receive<SubscribeAck>(ack =>
             {
-                _log.Info("Subscribed to {0} - ready for real-time processing.", _priceTopic);
+                if (_log.IsInfoEnabled)
+                    _log.Info("Subscribed to {0} - ready for real-time processing.", _priceTopic);
                 Become(Processing);
                 Context.Watch(_tickerEntity);
                 Context.SetReceiveTimeout(null);
@@ -88,7 +92,9 @@ namespace Akka.CQRS.Pricing.Actors
             Receive<IPriceUpdate>(p =>
             {
                 _history = _history.WithPrice(p);
-                _log.Info("[{0}] - current price is [{1}] as of [{2}]", _history.StockId, p.CurrentAvgPrice, p.Timestamp);
+
+                if (_log.IsInfoEnabled)
+                    _log.Info("[{0}] - current price is [{1}] as of [{2}]", _history.StockId, p.CurrentAvgPrice, p.Timestamp);
 
             });
 
@@ -111,7 +117,7 @@ namespace Akka.CQRS.Pricing.Actors
             {
                 if (t.ActorRef.Equals(_tickerEntity))
                 {
-                    _log.Info("Source of truth entity terminated. Re-acquiring...");
+                    _log.Warning("Source of truth entity terminated. Re-acquiring...");
                     Context.SetReceiveTimeout(TimeSpan.FromSeconds(5));
                     _priceActorGateway.Tell(new FetchPriceAndVolume(_tickerSymbol));
                     _mediator.Tell(new Unsubscribe(_priceTopic, Self)); // unsubscribe until we acquire new source of truth pricing
