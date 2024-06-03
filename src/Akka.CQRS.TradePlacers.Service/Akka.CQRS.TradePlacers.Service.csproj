@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="Akka.Bootstrap.Docker" />
+    <PackageReference Include="Akka.Persistence.RavenDB" />
+    <PackageReference Include="Akka.Persistence.RavenDB.Hosting" />
     <PackageReference Include="Petabridge.Cmd.Cluster" />
     <PackageReference Include="Akka.Cluster.Hosting" />  
     <PackageReference Include="Petabridge.Cmd.Cluster.Sharding" />

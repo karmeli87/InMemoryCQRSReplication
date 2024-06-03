@@ -9,6 +9,8 @@
     <PackageVersion Include="Akka.Cluster.Tools" Version="$(AkkaVersion)" />
     <PackageVersion Include="Akka.Persistence.Extras" Version="$(AkkaPersistenceExtrasVersion)" />
     <PackageVersion Include="Akka.Persistence.Query" Version="1.5.15" />
+    <PackageVersion Include="Akka.Persistence.RavenDB" Version="1.5.22" />
+    <PackageVersion Include="Akka.Persistence.RavenDB.Hosting" Version="1.5.22" />
     <PackageVersion Include="Petabridge.Cmd.Host" Version="$(PbmVersion)" />
     <PackageVersion Include="Petabridge.Collections" Version="1.0.0" />
     <PackageVersion Include="Akka.Bootstrap.Docker" Version="$(AkkaDockerBootstrapVersion)" />

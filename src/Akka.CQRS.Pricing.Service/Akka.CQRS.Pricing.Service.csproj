@@ -13,8 +13,9 @@
   <ItemGroup>
     <PackageReference Include="Akka.Bootstrap.Docker" />
     <PackageReference Include="Akka.HealthCheck.Persistence" />
+    <PackageReference Include="Akka.Persistence.RavenDB" />
+    <PackageReference Include="Akka.Persistence.RavenDB.Hosting" />
     <PackageReference Include="Akka.Persistence.Sql" />
-    <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Akka.Cluster.Hosting" />
 	<PackageReference Include="Petabridge.Cmd.Cluster" />
     <PackageReference Include="Petabridge.Cmd.Cluster.Sharding" />
