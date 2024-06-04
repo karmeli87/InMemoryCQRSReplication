@@ -4,31 +4,30 @@
   </PropertyGroup>
   <!-- App dependencies -->
   <ItemGroup>
-    <PackageVersion Include="Akka" Version="1.5.15" />
-    <PackageVersion Include="Akka.Cluster.Sharding" Version="$(AkkaVersion)" />
-    <PackageVersion Include="Akka.Cluster.Tools" Version="$(AkkaVersion)" />
+    <PackageVersion Include="Akka" Version="1.5.22" />
+    <PackageVersion Include="Akka.Cluster.Sharding" Version="1.5.22" />
+    <PackageVersion Include="Akka.Cluster.Tools" Version="1.5.22" />
     <PackageVersion Include="Akka.Persistence.Extras" Version="$(AkkaPersistenceExtrasVersion)" />
-    <PackageVersion Include="Akka.Persistence.Query" Version="1.5.15" />
+    <PackageVersion Include="Akka.Persistence.Query" Version="1.5.22" />
     <PackageVersion Include="Akka.Persistence.RavenDB" Version="1.5.22" />
     <PackageVersion Include="Akka.Persistence.RavenDB.Hosting" Version="1.5.22" />
-    <PackageVersion Include="Petabridge.Cmd.Host" Version="$(PbmVersion)" />
+    <PackageVersion Include="Petabridge.Cmd.Host" Version="1.4.1" />
     <PackageVersion Include="Petabridge.Collections" Version="1.0.0" />
     <PackageVersion Include="Akka.Bootstrap.Docker" Version="$(AkkaDockerBootstrapVersion)" />
-    <PackageVersion Include="Akka.HealthCheck.Persistence" Version="$(AkkaHealthCheckVersion)" />
-    <PackageVersion Include="Akka.Persistence.Sql" Version="$(AkkaSqlVersion)" />
-    <PackageVersion Include="Akka.Persistence" Version="1.5.15" />
+    <PackageVersion Include="Akka.HealthCheck.Persistence" Version="1.5.18" />
+    <PackageVersion Include="Akka.Persistence" Version="1.5.22" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="$(SqlClientVersion)" />
-    <PackageVersion Include="Petabridge.Cmd.Cluster" Version="$(PbmVersion)" />
-    <PackageVersion Include="Petabridge.Cmd.Cluster.Sharding" Version="$(PbmVersion)" />
-    <PackageVersion Include="Petabridge.Cmd.Remote" Version="$(PbmVersion)" />
-    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0.0" />
-    <PackageVersion Include="Akka.Cluster.Hosting" Version="$(AkkaHostingVersion)" />
+    <PackageVersion Include="Petabridge.Cmd.Cluster" Version="1.4.1" />
+    <PackageVersion Include="Petabridge.Cmd.Cluster.Sharding" Version="1.4.1" />
+    <PackageVersion Include="Petabridge.Cmd.Remote" Version="1.4.1" />
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
+    <PackageVersion Include="Akka.Cluster.Hosting" Version="1.5.20" />
   </ItemGroup>
   <!-- Test dependencies -->
   <ItemGroup>
-    <PackageVersion Include="FluentAssertions" Version="$(FluentAssertionsVersion)" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
-    <PackageVersion Include="xunit" Version="$(XunitVersion)" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="$(XunitRunnerVersion)" />
+    <PackageVersion Include="FluentAssertions" Version="6.12.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+    <PackageVersion Include="xunit" Version="2.8.1" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.1" />
   </ItemGroup>
 </Project>
